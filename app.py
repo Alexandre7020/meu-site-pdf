@@ -229,9 +229,10 @@ function renderLista() {
                 ${preview}
             </div>
             <div>
-                <button onclick="mover(${index}, -1)">⬆️</button>
-                <button onclick="mover(${index}, 1)">⬇️</button>
-                <button onclick="remover(${index})">❌</button>
+<button onclick="mover(${index}, -1)">⬆️</button>
+<button onclick="mover(${index}, 1)">⬇️</button>
+<button onclick="rotacionar(${index})">🔄</button>
+<button onclick="remover(${index})">❌</button>
             </div>
         `;
 
@@ -254,6 +255,19 @@ function remover(index) {
     arquivos.splice(index, 1);
     renderLista();
 }
+function rotacionar(index) {
+    if (!arquivos[index].rotacao) {
+        arquivos[index].rotacao = 0;
+    }
+
+    arquivos[index].rotacao += 90;
+
+    if (arquivos[index].rotacao >= 360) {
+        arquivos[index].rotacao = 0;
+    }
+
+    alert("Arquivo rotacionado " + arquivos[index].rotacao + "°");
+}
 // Enviar na ordem correta
 document.querySelector("form").addEventListener("submit", function(e) {
 console.log("FORMULARIO ENVIADO");
@@ -262,8 +276,9 @@ console.log("FORMULARIO ENVIADO");
     const formData = new FormData();
 
     arquivos.forEach(file => {
-        formData.append("files", file);
-    });
+    formData.append("files", file);
+    formData.append("rotacoes", file.rotacao || 0);
+});
 
     fetch("/merge", {
         method: "POST",
