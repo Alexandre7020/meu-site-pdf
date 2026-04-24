@@ -212,6 +212,7 @@ function remover(index) {
 }
 // Enviar na ordem correta
 document.querySelector("form").addEventListener("submit", function(e) {
+console.log("FORMULARIO ENVIADO");
     e.preventDefault();
 
     const formData = new FormData();
