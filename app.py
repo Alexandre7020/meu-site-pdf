@@ -189,7 +189,14 @@ dropArea.addEventListener("dragleave", () => {
 
 dropArea.addEventListener("drop", (e) => {
     e.preventDefault();
-    arquivos = Array.from(e.dataTransfer.files);
+
+    const novosArquivos = Array.from(e.dataTransfer.files);
+
+    novosArquivos.forEach(file => {
+        file.rotacao = 0; // 👈 inicializa rotação
+    });
+
+    arquivos = arquivos.concat(novosArquivos);
     renderLista();
 });
 
