@@ -108,16 +108,19 @@ def home():
     <h2>📄 Juntar arquivos em PDF</h2>
 
     <form>
-        <label class="drop-area" id="drop-area">
-            Arraste arquivos aqui ou clique
-            <input type="file" id="fileElem" multiple required>
-        </label>
+       <form>
+    <label class="drop-area" id="drop-area">
+        Arraste arquivos aqui ou clique
+        <input type="file" id="fileElem" multiple required>
+    </label>
 
-        <ul id="file-list"></ul>
+    <p id="file-count">Nenhum arquivo selecionado</p>
 
-        <br>
-        <button type="submit">Gerar PDF</button>
-    </form>
+    <ul id="file-list"></ul>
+
+    <br>
+    <button type="submit">Gerar PDF</button>
+</form>
 </div>
 
 <script>
@@ -126,6 +129,7 @@ let arquivos = [];
 const dropArea = document.getElementById("drop-area");
 const fileInput = document.getElementById("fileElem");
 const fileList = document.getElementById("file-list");
+const fileCount = document.getElementById("file-count");
 
 // Clique abre seletor
 dropArea.addEventListener("click", () => fileInput.click());
@@ -155,6 +159,8 @@ fileInput.addEventListener("change", (e) => {
 // Mostrar lista
 function renderLista() {
     fileList.innerHTML = "";
+
+    fileCount.textContent = arquivos.length + " arquivo(s) selecionado(s)";
 
     arquivos.forEach((file, index) => {
         const li = document.createElement("li");
