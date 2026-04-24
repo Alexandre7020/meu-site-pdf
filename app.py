@@ -8,6 +8,7 @@ import time
 
 app = Flask(__name__)
 app.secret_key = "chave_super_secreta_123"
+tentativas = {}
 
 # Segurança de sessão
 app.config.update(
@@ -44,7 +45,8 @@ def login():
 
             if dados["bloqueado_ate"] > time.time():
                 tempo = int(dados["bloqueado_ate"] - time.time())
-              return '''
+
+                return '''
 <h3>⛔ Muitas tentativas</h3>
 <p>Aguarde <span id="contador"></span> segundos...</p>
 
@@ -80,11 +82,10 @@ const intervalo = setInterval(() => {
 
             tentativas[ip]["erros"] += 1
 
-            # 🔴 Bloqueia após 3 erros
             if tentativas[ip]["erros"] >= 3:
-                tentativas[ip]["bloqueado_ate"] = time.time() + 120  # 120 segundos
+                tentativas[ip]["bloqueado_ate"] = time.time() + 120
                 tentativas[ip]["erros"] = 0
-                return "⛔ Muitas tentativas. Aguarde 1 minuto."
+                return "⛔ Muitas tentativas. Aguarde 2 minutos."
 
             return "❌ Senha incorreta"
 
@@ -95,7 +96,6 @@ const intervalo = setInterval(() => {
         <button type="submit">Entrar</button>
     </form>
     '''
-
 # -------- PROTEÇÃO --------
 @app.before_request
 def proteger():
