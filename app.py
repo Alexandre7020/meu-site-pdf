@@ -37,7 +37,7 @@ def login():
     if request.method == "POST":
         senha = request.form.get("senha")
 
-        if senha == "1234":
+        if senha == "Fantoni123x@@":
             session["logado"] = True
             session["user_id"] = str(uuid.uuid4())
             return redirect("/")
