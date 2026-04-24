@@ -152,8 +152,9 @@ dropArea.addEventListener("drop", (e) => {
 
 // Seleção normal
 fileInput.addEventListener("change", (e) => {
-    arquivos = Array.from(e.target.files);
+   arquivos = arquivos.concat(Array.from(e.target.files));
     renderLista();
+    fileInput.value = "";
 });
 
 // Mostrar lista
