@@ -159,11 +159,29 @@ function renderLista() {
     arquivos.forEach((file, index) => {
         const li = document.createElement("li");
 
+        let preview = "";
+
+        // Preview imagem
+        if (file.type.startsWith("image/")) {
+            const url = URL.createObjectURL(file);
+            preview = `<img src="${url}" width="80">`;
+        }
+
+        // Preview PDF
+        else if (file.type === "application/pdf") {
+            const url = URL.createObjectURL(file);
+            preview = `<iframe src="${url}" width="80" height="100"></iframe>`;
+        }
+
         li.innerHTML = `
-            ${file.name}
+            <div>
+                <strong>${file.name}</strong><br>
+                ${preview}
+            </div>
             <div>
                 <button onclick="mover(${index}, -1)">⬆️</button>
                 <button onclick="mover(${index}, 1)">⬇️</button>
+                <button onclick="remover(${index})">❌</button>
             </div>
         `;
 
@@ -182,7 +200,10 @@ function mover(index, direcao) {
 
     renderLista();
 }
-
+function remover(index) {
+    arquivos.splice(index, 1);
+    renderLista();
+}
 // Enviar na ordem correta
 document.querySelector("form").addEventListener("submit", function(e) {
     e.preventDefault();
