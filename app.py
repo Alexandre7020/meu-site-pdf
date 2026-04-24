@@ -223,19 +223,19 @@ function renderLista() {
             preview = `<iframe src="${url}" width="80" height="100"></iframe>`;
         }
 
-        li.innerHTML = `
-            <div>
-                <strong>${file.name}</strong><br>
-                ${preview}
-            </div>
-            <div>
-<button onclick="mover(${index}, -1)">⬆️</button>
-<button onclick="mover(${index}, 1)">⬇️</button>
-<button onclick="rotacionar(${index})">🔄</button>
-<button onclick="remover(${index})">❌</button>
-            </div>
-        `;
-
+li.innerHTML = `
+    <div>
+        <strong>${file.name}</strong><br>
+        Rotação: ${file.rotacao || 0}°<br>
+        ${preview}
+    </div>
+    <div>
+        <button onclick="mover(${index}, -1)">⬆️</button>
+        <button onclick="mover(${index}, 1)">⬇️</button>
+        <button onclick="rotacionar(${index})">🔄</button>
+        <button onclick="remover(${index})">❌</button>
+    </div>
+`;
         fileList.appendChild(li);
     });
 }
@@ -266,7 +266,7 @@ function rotacionar(index) {
         arquivos[index].rotacao = 0;
     }
 
-    alert("Arquivo rotacionado " + arquivos[index].rotacao + "°");
+    renderLista(); // atualiza interface
 }
 // Enviar na ordem correta
 document.querySelector("form").addEventListener("submit", function(e) {
