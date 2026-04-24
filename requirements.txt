@@ -1,0 +1,4 @@
+flask
+pillow
+PyPDF2
+gunicorn
