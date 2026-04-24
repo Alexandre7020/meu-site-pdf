@@ -77,6 +77,29 @@ def home():
         input[type="file"] { display: none; }
         button { background: #007bff; color: white; border: none; padding: 12px; border-radius: 5px; cursor: pointer; }
         button:hover { background: #0056b3; }
+
+        /* NOVO ESTILO DA LISTA */
+        #file-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+        }
+
+        #file-list li {
+            background: #f8f9fa;
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #file-list button {
+            margin-left: 5px;
+            padding: 5px 8px;
+            font-size: 12px;
+        }
     </style>
 </head>
 <body>
@@ -84,22 +107,30 @@ def home():
 <div class="box">
     <h2>📄 Juntar arquivos em PDF</h2>
 
-    <form method="POST" action="/merge" enctype="multipart/form-data">
+    <form>
         <label class="drop-area" id="drop-area">
             Arraste arquivos aqui ou clique
-            <input type="file" name="files" id="fileElem" multiple required>
+            <input type="file" id="fileElem" multiple required>
         </label>
 
+        <ul id="file-list"></ul>
+
+        <br>
         <button type="submit">Gerar PDF</button>
     </form>
 </div>
 
 <script>
+let arquivos = [];
+
 const dropArea = document.getElementById("drop-area");
 const fileInput = document.getElementById("fileElem");
+const fileList = document.getElementById("file-list");
 
+// Clique abre seletor
 dropArea.addEventListener("click", () => fileInput.click());
 
+// Arrastar arquivos
 dropArea.addEventListener("dragover", (e) => {
     e.preventDefault();
     dropArea.style.background = "#e0f0ff";
@@ -111,7 +142,69 @@ dropArea.addEventListener("dragleave", () => {
 
 dropArea.addEventListener("drop", (e) => {
     e.preventDefault();
-    fileInput.files = e.dataTransfer.files;
+    arquivos = Array.from(e.dataTransfer.files);
+    renderLista();
+});
+
+// Seleção normal
+fileInput.addEventListener("change", (e) => {
+    arquivos = Array.from(e.target.files);
+    renderLista();
+});
+
+// Mostrar lista
+function renderLista() {
+    fileList.innerHTML = "";
+
+    arquivos.forEach((file, index) => {
+        const li = document.createElement("li");
+
+        li.innerHTML = `
+            ${file.name}
+            <div>
+                <button onclick="mover(${index}, -1)">⬆️</button>
+                <button onclick="mover(${index}, 1)">⬇️</button>
+            </div>
+        `;
+
+        fileList.appendChild(li);
+    });
+}
+
+// Mover arquivos
+function mover(index, direcao) {
+    const novoIndex = index + direcao;
+
+    if (novoIndex < 0 || novoIndex >= arquivos.length) return;
+
+    [arquivos[index], arquivos[novoIndex]] =
+    [arquivos[novoIndex], arquivos[index]];
+
+    renderLista();
+}
+
+// Enviar na ordem correta
+document.querySelector("form").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    const formData = new FormData();
+
+    arquivos.forEach(file => {
+        formData.append("files", file);
+    });
+
+    fetch("/merge", {
+        method: "POST",
+        body: formData
+    })
+    .then(res => res.blob())
+    .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "resultado.pdf";
+        a.click();
+    });
 });
 </script>
 
