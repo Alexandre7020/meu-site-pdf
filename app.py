@@ -36,13 +36,56 @@ def limpar_arquivos(pasta):
 def login():
     if request.method == "POST":
         senha = request.form.get("senha")
+        ip = request.remote_addr
 
+        # 🔒 Verifica bloqueio
+        if ip in tentativas:
+            dados = tentativas[ip]
+
+            if dados["bloqueado_ate"] > time.time():
+                tempo = int(dados["bloqueado_ate"] - time.time())
+                return f'''
+<h3>⛔ Muitas tentativas</h3>
+<p>Aguarde <span id="contador">{tempo}</span> segundos...</p>
+
+<script>
+let tempo = {tempo};
+
+const contador = document.getElementById("contador");
+
+const intervalo = setInterval(() => {{
+    tempo--;
+    contador.innerText = tempo;
+
+    if (tempo <= 0) {{
+        clearInterval(intervalo);
+        location.reload();
+    }}
+}}, 1000);
+</script>
+'''
+
+        # ✅ Senha correta
         if senha == "Fantoni123x@@":
             session["logado"] = True
             session["user_id"] = str(uuid.uuid4())
+            tentativas[ip] = {"erros": 0, "bloqueado_ate": 0}
             return redirect("/")
+
+        # ❌ Senha incorreta
         else:
-            return "Senha incorreta"
+            if ip not in tentativas:
+                tentativas[ip] = {"erros": 0, "bloqueado_ate": 0}
+
+            tentativas[ip]["erros"] += 1
+
+            # 🔴 Bloqueia após 3 erros
+            if tentativas[ip]["erros"] >= 3:
+                tentativas[ip]["bloqueado_ate"] = time.time() + 120  # 120 segundos
+                tentativas[ip]["erros"] = 0
+                return "⛔ Muitas tentativas. Aguarde 1 minuto."
+
+            return "❌ Senha incorreta"
 
     return '''
     <h2>🔐 Login</h2>
