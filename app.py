@@ -300,9 +300,13 @@ console.log("FORMULARIO ENVIADO");
 '''
 
 # -------- MERGE --------
+from PyPDF2 import PdfMerger, PdfReader, PdfWriter
+from io import BytesIO
+
 @app.route("/merge", methods=["POST"])
 def merge():
     files = request.files.getlist("files")
+    rotacoes = request.form.getlist("rotacoes")
 
     if len(files) > 10:
         return "Máximo de 10 arquivos permitido", 400
@@ -314,7 +318,8 @@ def merge():
     pdfs = []
     extensoes = (".jpg", ".jpeg", ".png", ".pdf")
 
-    for file in files:
+    # 🔄 PROCESSAR ARQUIVOS
+    for i, file in enumerate(files):
         filename = str(uuid.uuid4()) + "_" + file.filename
         path = os.path.join(user_folder, filename)
         file.save(path)
@@ -322,14 +327,39 @@ def merge():
         if not filename.lower().endswith(extensoes):
             return "Arquivo inválido", 400
 
+        # pega rotação
+        rotacao = int(rotacoes[i]) if i < len(rotacoes) else 0
+
+        # 📷 IMAGEM → PDF
         if filename.lower().endswith((".jpg", ".jpeg", ".png")):
             img = Image.open(path).convert("RGB")
+
+            # aplica rotação na imagem
+            if rotacao:
+                img = img.rotate(-rotacao, expand=True)
+
             pdf_path = path + ".pdf"
             img.save(pdf_path)
             pdfs.append(pdf_path)
-        else:
-            pdfs.append(path)
 
+        # 📄 PDF
+        else:
+            reader = PdfReader(path)
+            writer = PdfWriter()
+
+            for page in reader.pages:
+                if rotacao:
+                    page.rotate(rotacao)
+
+                writer.add_page(page)
+
+            pdf_rotacionado = path + "_rot.pdf"
+            with open(pdf_rotacionado, "wb") as f:
+                writer.write(f)
+
+            pdfs.append(pdf_rotacionado)
+
+    # 🔗 JUNTAR PDFs
     merger = PdfMerger()
 
     for pdf in pdfs:
@@ -339,7 +369,7 @@ def merge():
     merger.write(output)
     merger.close()
 
-    # limpeza em segundo plano
+    # 🧹 limpeza em segundo plano
     threading.Thread(target=limpar_arquivos, args=(user_folder,)).start()
 
     return send_file(output, as_attachment=True)
