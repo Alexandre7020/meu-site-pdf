@@ -44,24 +44,27 @@ def login():
 
             if dados["bloqueado_ate"] > time.time():
                 tempo = int(dados["bloqueado_ate"] - time.time())
-                return f'''
+               return f'''
 <h3>⛔ Muitas tentativas</h3>
 <p>Aguarde <span id="contador">{tempo}</span> segundos...</p>
 
 <script>
-let tempo = {tempo};
+document.addEventListener("DOMContentLoaded", function() {{
 
-const contador = document.getElementById("contador");
+    let tempo = {tempo};
+    const contador = document.getElementById("contador");
 
-const intervalo = setInterval(() => {{
-    tempo--;
-    contador.innerText = tempo;
+    const intervalo = setInterval(() => {{
+        tempo--;
+        contador.innerText = tempo;
 
-    if (tempo <= 0) {{
-        clearInterval(intervalo);
-        location.reload();
-    }}
-}}, 1000);
+        if (tempo <= 0) {{
+            clearInterval(intervalo);
+            location.reload();
+        }}
+    }}, 1000);
+
+}});
 </script>
 '''
 
