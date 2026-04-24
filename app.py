@@ -256,6 +256,7 @@ function remover(index) {
     renderLista();
 }
 function rotacionar(index) {
+console.log("CLICOU", index);
     if (!arquivos[index].rotacao) {
         arquivos[index].rotacao = 0;
     }
