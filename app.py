@@ -227,13 +227,14 @@ function renderLista() {
         // Preview imagem
         if (file.type.startsWith("image/")) {
             const url = URL.createObjectURL(file);
-            preview = `<img src="${url}" width="80">`;
+            preview = `<img src="${url}" width="80" style="transform: rotate(${file.rotacao || 0}deg);">`;
         }
 
         // Preview PDF
         else if (file.type === "application/pdf") {
             const url = URL.createObjectURL(file);
-            preview = `<iframe src="${url}" width="80" height="100"></iframe>`;
+            preview = `<iframe src="${url}" width="80" height="100"
+style="transform: rotate(${file.rotacao || 0}deg);"></iframe>`;
         }
 
 li.innerHTML = `
