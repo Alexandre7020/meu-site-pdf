@@ -151,12 +151,11 @@ def home():
 <div class="box">
     <h2>📄 Juntar arquivos em PDF</h2>
 
-    <form>
-       <form>
-    <label class="drop-area" id="drop-area">
-        Arraste arquivos aqui ou clique
-        <input type="file" id="fileElem" multiple required>
-    </label>
+  <form>
+<label class="drop-area" id="drop-area">
+    Arraste arquivos aqui ou clique
+    <input type="file" id="fileElem" multiple>
+</label>
 
     <p id="file-count">Nenhum arquivo selecionado</p>
 
