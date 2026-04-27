@@ -343,7 +343,7 @@ def merge():
             return "Arquivo inválido", 400
 
         # pega rotação
-        rotacao = int(rotacoes[i]) if i < len(rotacoes) else 0
+        rotacao = int(rotacoes[i]) if i < len(rotacoes) and rotacoes[i] else 0
 
         # 📷 IMAGEM → PDF
         if filename.lower().endswith((".jpg", ".jpeg", ".png")):
@@ -364,7 +364,7 @@ def merge():
 
             for page in reader.pages:
                 if rotacao:
-                    page.rotate(rotacao)
+                    page.rotate_clockwise(rotacao)
 
                 writer.add_page(page)
 
