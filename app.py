@@ -354,7 +354,7 @@ def merge():
                 img = img.rotate(-rotacao, expand=True)
 
             pdf_path = path + ".pdf"
-            img.save(pdf_path)
+            img.save(pdf_path, "PDF")
             pdfs.append(pdf_path)
 
         # 📄 PDF
